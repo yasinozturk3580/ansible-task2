@@ -1,0 +1,31 @@
+- name: Install Apache
+  apt:
+    name: apache2
+    state: latest
+
+- name: Make sure a service is running
+  systemd:
+    state: started
+    enabled: yes
+    name: apache2
+
+- name: Download template
+  get_url:
+    url: https://www.free-css.com/assets/files/free-css-templates/download/page292/honey.zip
+    dest: /tmp/honey.zip
+
+- name: Install Unzip
+  apt:
+    name: unzip
+    state: latest
+
+- name: Extract a template
+  unarchive:
+    src: /tmp/honey.zip
+    dest: /tmp/
+    remote_src: yes
+
+- name: Move templates files to /var/www/html
+  shell: "mv /tmp/honey-html/* /var/www/html/"
+  args:
+    creates: /var/www/html/contact.html 

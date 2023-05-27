@@ -1,0 +1,38 @@
+- hosts: all
+  tasks:
+  - name: Disable SELinux
+    selinux:
+      state: disabled
+    when: ansible_os_family == 'RedHat'
+
+  - name: Install Apache
+    package:
+      name: "{{ package_name }}"
+      state: latest
+
+  - name: Make sure a service is running
+    systemd:
+      state: started
+      enabled: yes
+      name: "{{ service_name }}"
+
+  - name: Download template
+    get_url:
+      url: https://www.free-css.com/assets/files/free-css-templates/download/page292/honey.zip
+      dest: /tmp/honey.zip
+
+  - name: Install Unzip
+    package:
+      name: unzip
+      state: latest
+
+  - name: Extract a template
+    unarchive:
+      src: /tmp/honey.zip
+      dest: /tmp/
+      remote_src: yes
+
+  - name: Move templates files to /var/www/html
+    shell: "mv /tmp/honey-html/* /var/www/html/"
+    args:
+      creates: /var/www/html/contact.html
